@@ -1,13 +1,13 @@
 {
-  "version": 2,
+  "version": "3.0",
   "updated": "2026-10-22",
   "featured": [
     "1807.03819",
     "2502.05171",
     "2510.25741",
-    "2507.10524",
     "2604.21106",
-    "2610.23036"
+    "2609.01343",
+    "2609.36636"
   ],
   "notes": {
     "1807.03819": {
@@ -242,6 +242,438 @@
         "2412.06769"
       ],
       "checked": "2026-10-22"
+    },
+    "2609.01343": {
+      "heading": "SMELT：循环到底有没有真实的算力收益？",
+      "question": "当 total params、per-token FLOPs 和 KV Cache 同时匹配，循环能否仍胜出？",
+      "takeaway": "对齐每 token FLOPs、非词嵌入总参数和 KV cache，再比较中间层两次循环的 MoE 与非循环 MoE。 比只比较参数量更接近公平因果对照；揭示稀疏专家可弥补循环的容量损失。",
+      "prerequisite": "懂 MoE / Scaling Laws",
+      "focus": "看中间半层循环两次的配方；检查 Chinchilla 拟合、匹配预算与注意力 sink 机制。",
+      "boundary": "6.8–18% 的训练 FLOPs 节约来自论文拟合的 compute-optimal frontier；不等于 wall-clock 或任意模型通用收益。",
+      "level": "研究",
+      "review": "原文 HTML：设计与实验摘要；未独立复现",
+      "source": "https://arxiv.org/abs/2609.01343",
+      "related": [
+        "2604.21106",
+        "2606.04438",
+        "2605.09165"
+      ],
+      "checked": "2026-10-22"
+    },
+    "2606.04438": {
+      "heading": "LoopMoE：第二轮为何有不同的功能？",
+      "question": "重复同一专家是否只是空转，如何使循环跨轮分化？",
+      "takeaway": "使用迭代条件归一化 IterAdaLN 和 MoE 活跃容量平衡，让循环与稀疏路由协同。 3B/9B 的同参数、同计算、同活跃子层对照，是循环能否摆脱 FLOPs 混杂的关键证据。",
+      "prerequisite": "懂 top-k MoE",
+      "focus": "核对 per-token FLOPs 与 total params 等预算；检查 IterAdaLN 和每轮 active expert 变化。",
+      "boundary": "作者报告 3B 在 9 项中胜过 8 项、均值增益超 1 分；主要在其 MoE 架构和训练设置下成立。",
+      "level": "研究",
+      "review": "论文原文：方法与受控对照；未独立复现",
+      "source": "https://arxiv.org/abs/2606.04438",
+      "related": [
+        "2609.01343",
+        "2605.09165"
+      ],
+      "checked": "2026-10-22"
+    },
+    "2605.09165": {
+      "heading": "为什么 Sparse Experts 改变循环的 Scaling？",
+      "question": "Dense-loop 劣势究竟来自参数共享还是实际可用专家多样性？",
+      "takeaway": "分析 dense-loop 规模化劣势，并用稀疏专家跨循环路由分歧解释 MoE-loop 的改善。 把容量限制、循环层间专家差异和 early exit 联系起来，与 SMELT/LoopMoE 构成研究证据组。",
+      "prerequisite": "懂 MoE 和 Early Exit",
+      "focus": "检查 2×2 dense/sparse、loop/unloop 对照以及跨轮路由相似度。",
+      "boundary": "其结论是作者受控实验中 MoE 的优势；不能推断所有稀疏路由都在任意 scale 有收益。",
+      "level": "研究",
+      "review": "原文：主比较与机制；未独立复现",
+      "source": "https://arxiv.org/abs/2605.09165",
+      "related": [
+        "2606.04438",
+        "2609.01343"
+      ],
+      "checked": "2026-10-22"
+    },
+    "2609.36636": {
+      "heading": "What Makes Recurrence Effective：同等深度也不等于同等能力",
+      "question": "为什么继续 loop 会让 reasoning 上升，却损害 factual knowledge？",
+      "takeaway": "系统检验训练深度内外的递归、循环位置、coda 与输入注入，发现 reasoning 和 knowledge 增益可能相反。 解释为什么更多 loop 常使知识检索恶化，且有效深度一致仍不代表行为一致。",
+      "prerequisite": "已读 Huginn/Ouro",
+      "focus": "对照低于/高于训练深度、知识与推理两条曲线，检查 prelude/coda/injection 消融。",
+      "boundary": "难题不总是需要更多 loop；history-state 注入和 timestep gating 的收益依赖拓扑与预算。",
+      "level": "研究",
+      "review": "原文 HTML：方法与结果；未独立复现",
+      "source": "https://arxiv.org/abs/2609.36636",
+      "related": [
+        "2610.23036",
+        "2609.16665"
+      ],
+      "checked": "2026-10-22"
+    },
+    "2609.16665": {
+      "heading": "Right Direction, Wrong Step：有益更新可能被过大步长破坏",
+      "question": "循环更新方向正确时，为什么最终答案反而变差？",
+      "takeaway": "从输出效用的沿更新方向曲率分析，区分方向正确与步长过大的循环失败。 为 overthinking 提供可检验的几何机制：并非所有有害循环都属于无用计算。",
+      "prerequisite": "理解 residual 与微分几何基础",
+      "focus": "追踪作者如何定义 reference utility，筛选 failure 样本，并测 1/4-step 改善率。",
+      "boundary": "72–83% 的四分之一步改进率仅针对论文筛选出的失败样本，绝不能泛化到全部输入。",
+      "level": "研究",
+      "review": "原文 HTML：几何假设与实验结果；未独立复现",
+      "source": "https://arxiv.org/abs/2609.16665",
+      "related": [
+        "2609.36636",
+        "2608.26556"
+      ],
+      "checked": "2026-10-22"
+    },
+    "2608.09444": {
+      "heading": "Continuous Depth Batching：有条件计算怎样落到 GPU Serving？",
+      "question": "每个 token 走不同深度时，常规 batch 为什么利用率不高？",
+      "takeaway": "提出以循环粒度而非 token 粒度调度的 continuous depth batching，并隔离前后非循环段。 把可变深度的潜在算力节省转化为实际 GPU 服务吞吐，是系统落地重要工作。",
+      "prerequisite": "懂 KV cache、prefill、decode",
+      "focus": "看独立的 prelude/core/coda 队列与 loop-level 调度，区别理论节省与实际吞吐。",
+      "boundary": "Ouro/Huginn 上作者报告离线吞吐提升 1.5–1.9 倍；依赖负载和模型，非普适数字。",
+      "level": "工程",
+      "review": "原文 HTML：调度和测量设置；未独立复现",
+      "source": "https://arxiv.org/abs/2608.09444",
+      "related": [
+        "2607.15456",
+        "2607.20519"
+      ],
+      "checked": "2026-10-22"
+    },
+    "2607.15456": {
+      "heading": "Looped Latent Attention：KV Cache 没有因为权重共享而消失",
+      "question": "为什么缓存仍然随循环步数增长？",
+      "takeaway": "研究同一 token 在不同 loop 的 KV 轨迹低秩结构，并通过蒸馏重建各 loop 的专有 KV。 提醒读者权重共享并不会自然减少随 loop 数增长的 KV cache；提出针对循环轴的压缩。",
+      "prerequisite": "懂 KV/GQA/MLA",
+      "focus": "计算每个 token × layer × loop 的缓存维度，并看跨 loop 压缩如何保留不同步骤。",
+      "boundary": "21.3 倍压缩、H200 上 batch 容量 32→768 是特定 4k 配置结果；简单重用最后一轮 KV 会严重损伤准确率。",
+      "level": "工程",
+      "review": "原文 HTML：缓存方法和性能；未独立复现",
+      "source": "https://arxiv.org/abs/2607.15456",
+      "related": [
+        "2608.09444",
+        "2610.06833"
+      ],
+      "checked": "2026-10-22"
+    },
+    "2609.30820": {
+      "heading": "Quantizing Looped Transformers：校准需要看整个循环",
+      "question": "为什么第 0 步 GPTQ 可能不如 RTN？",
+      "takeaway": "分离量化反馈曝光与仅用第 0 轮激活校准的盲区，并将 GPTQ Hessian 累积跨多个循环。 解释为什么传统 PTQ 优化步骤在共享参数、反复前传的模型中失效。",
+      "prerequisite": "懂 PTQ/GPTQ",
+      "focus": "分别看非残差 adapter 与 residual core 的量化损害，以及多步 Hessian 校准。",
+      "boundary": "比较涵盖 9 个 checkpoint；结论关于校准协议，不能直接当成实际低比特推理加速报告。",
+      "level": "工程",
+      "review": "原文 HTML：量化消融；未独立复现",
+      "source": "https://arxiv.org/abs/2609.30820",
+      "related": [
+        "2610.05265",
+        "2607.15456"
+      ],
+      "checked": "2026-10-22"
+    },
+    "2610.05265": {
+      "heading": "Loopy：目标循环深度是量化超参数",
+      "question": "深度不同，最佳 W4A4 候选是否改变？",
+      "takeaway": "按目标部署循环深度选择量化表示，并用逐步候选筛选减少校准成本。 与 Quantizing Looped Transformers 搭配，学习跨循环量化误差和深度相关校准。",
+      "prerequisite": "懂低比特 PTQ",
+      "focus": "检查在目标深度计算的 validation objective 与配置筛选成本。",
+      "boundary": "Ouro-1.4B W4A4 LAMBADA 困惑度下降 36.5% 是相对 SpinQuant 的特定配置比较。",
+      "level": "工程",
+      "review": "原文：摘要、方法与相关实验；未独立复现",
+      "source": "https://arxiv.org/abs/2610.05265",
+      "related": [
+        "2609.30820"
+      ],
+      "checked": "2026-10-22"
+    },
+    "2602.11451": {
+      "heading": "LoopFormer：不是无条件延长循环，而是学会不同步长",
+      "question": "不同长度的隐状态轨迹怎样保持一致？",
+      "takeaway": "用 shortcut consistency 对齐不同长度的循环轨迹，再按时间与步长调制，使预测适应推理预算。 把 variable-depth 当训练分布来设计，而非假设训练固定 4 步后自然能泛化到 12 步。",
+      "prerequisite": "懂 consistency training",
+      "focus": "核对 shortcut consistency 约束和 time/step conditioning。",
+      "boundary": "ICLR 2026；性能与方法依赖循环轨迹一致性监督，不是简单重复共享层。",
+      "level": "进阶",
+      "review": "原文摘要与元数据；未独立复现",
+      "source": "https://arxiv.org/abs/2602.11451",
+      "related": [
+        "2502.05171",
+        "2609.36636"
+      ],
+      "checked": "2026-10-22"
+    },
+    "2511.08577": {
+      "heading": "Think-at-Hard：避免对已正确的 token 继续思考",
+      "question": "如何选择哪些 token 不进入下一轮？",
+      "takeaway": "通过 token 级判断器跳过已足够可靠的计算，仅对困难 token 触发 latent iteration。 强调最优策略不是多循环，而是识别哪些 token 不应循环；与纯 depth scaling 形成对照。",
+      "prerequisite": "懂 early exit 与 LoRA",
+      "focus": "注意预测器成本、跳过比例、跨 iteration 信息交流，并核对 ICML 2026 受控比较。",
+      "boundary": "ICML 2026；作者报告跳过 93% token 的迭代，比较时须计入 decider 与 depth-aware LoRA。",
+      "level": "进阶",
+      "review": "论文摘要与会议元数据；未独立复现",
+      "source": "https://arxiv.org/abs/2511.08577",
+      "related": [
+        "2607.20519",
+        "2608.09444"
+      ],
+      "checked": "2026-10-22"
+    },
+    "2602.08864": {
+      "heading": "ANIRA：难度相关计算分配不代表长度外推",
+      "question": "计算使用量随任务难度上升，是否说明算法真的学会了？",
+      "takeaway": "ANIRA 在复杂度可控的算法任务中研究逐 token 计算分配、停止时机与 OOD 长度泛化。 拆穿一个常见误判：模型学会把更多计算给难 token，不代表学会了算法外推。",
+      "prerequisite": "理解算法任务复杂度",
+      "focus": "看难度受控数据集中的 train/test length split，区分 compute allocation 与 OOD extrapolation。",
+      "boundary": "其对照主要是合成任务，不能等同于自然语言 benchmark 的泛化能力。",
+      "level": "研究",
+      "review": "论文摘要及元数据；未独立复现",
+      "source": "https://arxiv.org/abs/2602.08864",
+      "related": [
+        "2511.08577",
+        "2607.20519"
+      ],
+      "checked": "2026-10-22"
+    },
+    "2608.03624": {
+      "heading": "LoopMTP：让第 t 轮思考未来第 t 个 token",
+      "question": "多 token prediction 能否让每轮不是同质的更新？",
+      "takeaway": "将第 t 轮状态柔性对齐未来第 t 个 token 的 embedding，结合门控以区别不同循环的监督。 值得研究如何让循环具备明确的跨轮功能分化，而不是每轮都做相同事。",
+      "prerequisite": "理解 next-token 与 multi-token loss",
+      "focus": "分辨循环时刻与预测目标的绑定、潜在对齐项和回传路径。",
+      "boundary": "作者报告最大 8.1% 相对准确率提升和至多 15 loop 稳定性；并非受控表明任意延长都改善。",
+      "level": "进阶",
+      "review": "原文在线内容：结构与概述；未独立复现",
+      "source": "https://arxiv.org/abs/2608.03624",
+      "related": [
+        "2609.16665",
+        "2511.08577"
+      ],
+      "checked": "2026-10-22"
+    },
+    "2608.26556": {
+      "heading": "动力学相位：相同准确率也可能有不同的计算时间分布",
+      "question": "为何同一架构、不同初始化可能有不同的固定点附近行为？",
+      "takeaway": "同架构同目标但初始化不同的模型可进入不同的动力学相位，导致循环时间尺度不同。 提醒读者固定点、收敛速度与 compute scaling 可能依赖实际优化后的动力学相位。",
+      "prerequisite": "理解 Jacobian 与固定点",
+      "focus": "严格限定 fold 与 Neimark–Sacker 相位的局部分析，不将其当作大模型普适证明。",
+      "boundary": "推导在精心控制的模型和局部动力学假设下成立；不能直接外推到所有数十亿规模 LLM。",
+      "level": "研究",
+      "review": "原文在线正文：动力学相位与证明范围；未独立复现",
+      "source": "https://arxiv.org/abs/2608.26556",
+      "related": [
+        "2604.15259",
+        "2610.06833"
+      ],
+      "checked": "2026-10-22"
+    },
+    "2608.15062": {
+      "heading": "RecurrentGPT：让共享层在不同轮做不同的事情",
+      "question": "如何通过状态门控调制同一个 core？",
+      "takeaway": "在 shared core 前后保留不共享层，通过状态、prelude、噪声驱动的轻量门控，使循环功能差异化。 值得与 Huginn 的输入注入和 Part I 的拓扑消融并读，研究共享层是否只能做同一计算。",
+      "prerequisite": "理解 prelude / coda 和 gate",
+      "focus": "比较 matched FLOPs、matched parameters 的不同结论及 latency-memory tradeoff。",
+      "boundary": "isoFLOPS 与 isoPARAMS 两套对照得到不同收益，报告的量化与延迟取决具体 GPT-2/小中型设置。",
+      "level": "进阶",
+      "review": "原文在线正文：结构与主结果；未独立复现",
+      "source": "https://arxiv.org/abs/2608.15062",
+      "related": [
+        "2610.23036",
+        "2606.04438"
+      ],
+      "checked": "2026-10-22"
+    },
+    "2507.02199": {
+      "heading": "Latent CoT？Huginn 的 hidden steps 是否真可解码？",
+      "question": "能观察到迭代状态变化，是否等于可解释思维链？",
+      "takeaway": "对 Huginn 的多轮隐状态做 Logit Lens / Coda Lens 探测，在算法任务中仅发现有限可解码的 latent CoT 证据。 是反驳“只要循环更多就必然形成可解释思维链”的关键反例。",
+      "prerequisite": "知道 Logit Lens 和 probing",
+      "focus": "看不同 block 与 coda readout 的不一致性；对比 explicit CoT。",
+      "boundary": "probe 的可解码性受层位置、readout 等影响；缺乏可读轨迹也不证明模型完全不推理。",
+      "level": "研究",
+      "review": "arXiv 摘要与 workshop 元数据；未独立复现",
+      "source": "https://arxiv.org/abs/2507.02199",
+      "related": [
+        "2502.05171",
+        "2606.31779"
+      ],
+      "checked": "2026-10-22"
+    },
+    "2605.26106": {
+      "heading": "LoopMDM：diffusion 的时间步之外，还能循环层深度",
+      "question": "去噪 step 与 recurrence depth 是一回事吗？",
+      "takeaway": "在 masked diffusion language model 的一次去噪步骤内部复用早中段 Transformer 层。 清晰呈现两个正交轴：沿层深度循环，与沿去噪时间步迭代可以同时存在。",
+      "prerequisite": "了解 masked DLM",
+      "focus": "把 denoising timeline 与每步内部的 shared-depth loop 画成嵌套图。",
+      "boundary": "与自回归 Huginn/Ouro 目标、masking、采样路径不同，归入关联方向而非同一种模型。",
+      "level": "进阶",
+      "review": "原文在线：摘要与设计；未独立复现",
+      "source": "https://arxiv.org/abs/2605.26106",
+      "related": [
+        "2610.04198",
+        "2510.14961"
+      ],
+      "checked": "2026-10-22"
+    },
+    "2610.04198": {
+      "heading": "ALoDLM：Token Commitment 与 latent recurrence 不是同一个过程",
+      "question": "哪个 token 应先确定，哪个应在当前去噪步继续迭代？",
+      "takeaway": "在 DLM 去噪的每轮内部按 token 难度继续隐空间计算，预测到位的 token 再提交为离散上下文。 对比 AR token commitment、DLM 去噪步骤和 latent loop，建立不混淆三种时间尺度的框架。",
+      "prerequisite": "懂 masked diffusion 与 AR",
+      "focus": "分解“扩散采样步”“跨层循环”“token commit”三个不同轴。",
+      "boundary": "在 1.7B/8B 与所选基线下报告收益；仍应核对模型规模、训练数据和 serving 引擎。",
+      "level": "研究",
+      "review": "原文在线：模型方法与主结果；未独立复现",
+      "source": "https://arxiv.org/abs/2610.04198",
+      "related": [
+        "2605.26106",
+        "2510.14961"
+      ],
+      "checked": "2026-10-22"
+    },
+    "2509.26314": {
+      "heading": "Latent Thinking Optimization：隐藏状态能提供 reward 吗？",
+      "question": "只奖励最终答案会丢失哪些潜在过程监督？",
+      "takeaway": "在 Huginn latent 中训练正确性判别器与潜在奖励信号，并使用潜在轨迹优化。 将深度循环与 post-training/RL 接起来：是否能从中间隐状态提供比最终答案更密集的信号？",
+      "prerequisite": "懂奖励模型 / RL",
+      "focus": "检验正确性预测器与真正因果推理的区别，关注样本外泛化与 reward hacking。",
+      "boundary": "正确性判别器的预测能力并不证明每个潜在步都是人类可解释推理步骤。",
+      "level": "研究",
+      "review": "arXiv 摘要与方法主张；未独立复现",
+      "source": "https://arxiv.org/abs/2509.26314",
+      "related": [
+        "2602.10520",
+        "2507.02199"
+      ],
+      "checked": "2026-10-22"
+    },
+    "2607.20519": {
+      "heading": "会停止计算的模型不一定需要复杂 halting gate",
+      "question": "不良 early exit 是读出器弱还是被它改变的轨迹质量差？",
+      "takeaway": "把停止门的作用拆成轨迹监督与读出策略，比较先固定深度先验再后验决策的方案。 解决动态深度的反事实：究竟是 gate 不会判断，还是它改变了整个递归轨迹的训练？",
+      "prerequisite": "懂 ponder/ACT",
+      "focus": "对比训练时固定深度先验与共同优化 exit gate 的中间状态分布。",
+      "boundary": "包含合成任务及 Ouro 1.4B/2.6B，结果不能直接迁移所有模型的 halting gates。",
+      "level": "研究",
+      "review": "论文摘要与方法概述；未独立复现",
+      "source": "https://arxiv.org/abs/2607.20519",
+      "related": [
+        "2511.08577",
+        "2602.08864"
+      ],
+      "checked": "2026-10-22"
+    },
+    "2604.15259": {
+      "heading": "固定点安全收敛，也许丢失了输入依赖",
+      "question": "收敛稳定的状态为何可能无法区分问题？",
+      "takeaway": "用固定点的可达性、输入依赖性和几何结构分析 recall 与 normalization 的必要性。 将“循环收敛”拆解为可检验条件，揭示没有输入 recall 时固定点可能不携带必要信息。",
+      "prerequisite": "懂固定点与归一化",
+      "focus": "看 reachable/input-dependent/geometry 三条件与 recall 位置。",
+      "boundary": "证明建立在具体网络假设上，实验主要是单层小模型下的 chess/sudoku/prefix sum。",
+      "level": "研究",
+      "review": "arXiv 摘要及理论适用条件；未独立复现",
+      "source": "https://arxiv.org/abs/2604.15259",
+      "related": [
+        "2610.06833",
+        "2608.26556"
+      ],
+      "checked": "2026-10-22"
+    },
+    "2606.00605": {
+      "heading": "理论：从可表达算法走向可学到算法",
+      "question": "证明某网络能计算 power method，是否就证明 SGD 会学出来？",
+      "takeaway": "证明带 LayerNorm 的 looped linear Transformer 可在 PCA 预测任务中通过梯度下降学到 power iteration。 难得的从训练动力学论证算法归纳偏置，而不仅仅展示模型可以表达算法。",
+      "prerequisite": "懂 PCA / 矩阵特征值",
+      "focus": "明确线性 attention、LayerNorm、训练目标等假设再看梯度下降定理。",
+      "boundary": "特定线性 attention、LN 与 PCA 设定；不是现代 LLM 从 SGD 必然学出通用迭代算法的证明。",
+      "level": "研究",
+      "review": "arXiv 摘要与结论范围；未独立复现",
+      "source": "https://arxiv.org/abs/2606.00605",
+      "related": [
+        "programmable-looped-transformers",
+        "1807.03819"
+      ],
+      "checked": "2026-10-22"
+    },
+    "2609.23033": {
+      "heading": "WaveFront Decoding：让不同深度一起批处理",
+      "question": "能否在同一个共享层调用中同时 draft 和 verify？",
+      "takeaway": "把不同 token 和 loop depth 的草稿及验证合并成波前批处理，利用中间轮 readout 做 speculative decoding。 与单步早退不同：改变循环的调度图以利用 GPU 并行性。",
+      "prerequisite": "懂 speculative decoding",
+      "focus": "看 token 与 loop 对角线并行调度，查吞吐与延迟分别相对什么基线。",
+      "boundary": "作者在 Spec-Bench 上报告 Ouro 2.6B 2.42×、Huginn 3.5B 3.54×；特定配套 KV sharing 可达更高。",
+      "level": "工程",
+      "review": "论文摘要与作者报告的指标；未独立复现",
+      "source": "https://arxiv.org/abs/2609.23033",
+      "related": [
+        "2608.09444",
+        "2609.17184"
+      ],
+      "checked": "2026-10-22"
+    },
+    "2610.10625": {
+      "heading": "Safe at One Loop, Risky at Another：安全需要跨循环深度测量",
+      "question": "同一个 prompt 在 r=2 与 r=8 安全性相同吗？",
+      "takeaway": "在不同深度测 jailbreak 成功率与跨深度迁移，指出单一深度安全对齐不能保证所有深度同样安全。 填补 recurring inference 独有的安全评测维度，SafeBridge 尝试做跨深度联合对齐。",
+      "prerequisite": "知道 safety alignment",
+      "focus": "看 matched-depth 与 cross-depth jailbreak 成功率，比较 depth-wise alignment。",
+      "boundary": "报告基于论文使用的模型及攻击集合，作者表示代码将在论文接收后发布；不是普遍安全结论。",
+      "level": "研究",
+      "review": "原文 HTML：安全评测与局限；未独立复现",
+      "source": "https://arxiv.org/abs/2610.10625",
+      "related": [
+        "2610.02741",
+        "2609.36636"
+      ],
+      "checked": "2026-10-22"
+    },
+    "alvin-loop-ttt": {
+      "heading": "TTT 也许比额外 looping 更有效",
+      "question": "为何 Ouro 的额外循环不增益，微调少量 RMSNorm 却有收益？",
+      "takeaway": "在 Ouro-1.4B 上比较额外 depth 与测试时微调：只更新少量 RMSNorm 参数，观察何时修正比多 loop 更有效。 对比多循环和少量测试时适应，报告严格的样本量及失效条件，是可讨论的个人实验长文。",
+      "prerequisite": "懂测试时 entropy minimization",
+      "focus": "核对四-shot GSM8K n=500、batch 结束重置和推理端反向传播开销。",
+      "boundary": "四-shot GSM8K n=500 0.766→0.848；仅限研究者测试设置，TTT 还要计算反向传播，不能说更快。",
+      "level": "进阶",
+      "review": "作者完整技术博客，未复现；未独立复现",
+      "source": "https://alvinzh04.github.io/blog/looped-ttt.html",
+      "related": [
+        "2510.25741",
+        "2609.36636"
+      ],
+      "checked": "2026-10-22"
+    },
+    "smelt-study-notes": {
+      "heading": "SMELT 第三方解读：把数字放回预算里",
+      "question": "哪些算力节省是实测，哪些来自拟合外推？",
+      "takeaway": "对 SMELT 的多预算匹配、Scaling surface 和注意力机制进行数学与实验解读。 优秀的研究阅读范例：把原文拟合指标、节约的计算预算和机制解释分开讨论。",
+      "prerequisite": "读过 SMELT 摘要",
+      "focus": "查每条系数属于原文实验还是博主解读，尤其 10^22 FLOPs 外推。",
+      "boundary": "作者以外的第三方博客，含原创推测；拟合未来预算是外推而非验证，具体数字以原论文为准。",
+      "level": "进阶",
+      "review": "第三方研究博客全文，未独立复现；未独立复现",
+      "source": "https://jianyuh.github.io/architecture/scalinglaws/2026/09/07/SMELT-Compute-Matched-Looped-MoE-Scaling-Laws.html",
+      "related": [
+        "2609.01343",
+        "2604.21106"
+      ],
+      "checked": "2026-10-22"
+    },
+    "training-looped-transformers-blog": {
+      "heading": "小模型动手：block passes 比训练步数更诚实",
+      "question": "更新次数更少，为什么可能耗费更多总计算？",
+      "takeaway": "在小型符号映射实验上比较循环次数、训练 pass 预算，以及复习策略对遗忘的影响。 有实验控制的轻量实操长文，适合初学者理解共享参数梯度与预算核算。",
+      "prerequisite": "懂 AdamW、BPTT",
+      "focus": "核对 1/2/4/8 loops 与 3 seeds、符号映射任务，不把它当预训练 LLM 结果。",
+      "boundary": "仅约五万参数、符号映射 CPU 任务；不可视为大型语言模型的模型架构优劣结论。",
+      "level": "入门",
+      "review": "社区实验博客全文，受限于小任务；未独立复现",
+      "source": "https://huggingface.co/blog/TiGa-RCE/training-looped-transformers",
+      "related": [
+        "looped-gpt",
+        "2604.21106"
+      ],
+      "checked": "2026-10-22"
     }
   },
   "routes": [
@@ -304,6 +736,16 @@
           "id": "2507.10524",
           "goal": "再进入动态计算与缓存",
           "question": "逐 token 深度对路由、批处理和缓存提出了什么要求？"
+        },
+        {
+          "id": "2602.11451",
+          "goal": "按预算训练可变深度循环",
+          "question": "不同长度的隐状态轨迹如何保持一致？"
+        },
+        {
+          "id": "2608.09444",
+          "goal": "让动态深度在真实 GPU 服务里省算力",
+          "question": "不同 token 的深度怎样 batched serving？"
         }
       ]
     },
@@ -314,7 +756,7 @@
       "subtitle": "把理论、反例和系统证据放在一起",
       "audience": "准备选题、设计消融或写研究综述",
       "prerequisite": "读过 Huginn、Ouro，理解预训练预算和实验对照。",
-      "outcome": "能区分表达能力、可学习性与真实加速，并提出一个可验证而非只追热点的问题。",
+      "outcome": "能提出受预算匹配支持的研究假设，理解稳定性、动态停止、latent 可解释性与跨深度安全的证据边界。",
       "steps": [
         {
           "id": "programmable-looped-transformers",
@@ -340,6 +782,31 @@
           "id": "2510.14961",
           "goal": "探索与并行采样的联系",
           "question": "这是模型本身改变了，还是采样过程改变了？"
+        },
+        {
+          "id": "2609.01343",
+          "goal": "建立受控 MoE 预算对照",
+          "question": "在参数、FLOPs 与 KV Cache 三者一致后，循环还能胜出吗？"
+        },
+        {
+          "id": "2606.04438",
+          "goal": "检验不同 loop 的专家路由是否分化",
+          "question": "第二遍专家路由改变的是什么？"
+        },
+        {
+          "id": "2609.36636",
+          "goal": "用负面实验划定循环有效范围",
+          "question": "增加循环为何能提升推理却伤害知识？"
+        },
+        {
+          "id": "2507.02199",
+          "goal": "避免把隐状态变化等同于可解释 CoT",
+          "question": "probe 到中间值和因果上使用推理链有何不同？"
+        },
+        {
+          "id": "2610.10625",
+          "goal": "把跨深度安全纳入实验设计",
+          "question": "只测单一 exit depth 的拒答率，能代表其他深度吗？"
         }
       ]
     }
