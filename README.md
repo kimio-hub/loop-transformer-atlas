@@ -1,107 +1,88 @@
-# LOOP / ATLAS — Loop Transformer 精选研究站
+# Loop Atlas
 
-> 截至 **2026-10-22** 的静态策展快照。围绕 Looped / Recurrent-Depth / Weight-Tied Transformer 的论文、技术博客、作者实验记录和开源代码，提供中文解读与适合初学者、进阶者、研究人员的阅读路线。
+一个专注于 **Looped / Recurrent-Depth Transformer** 的中文阅读与研究导航站。
 
-## 直接打开
+**网站：** https://kimio-hub.github.io/loop-transformer-atlas/
 
-**双击 `index.html` 即可使用**。网站是无依赖、完全自包含的静态页面：资料与交互代码全部嵌在 HTML 中，无需 Python、Node、登录、服务器或网络请求来显示目录。跳转原文需要网络连接。
+保留原有 82 条资源（67 篇论文、8 篇博客、7 个项目/索引），以精选导读和学习路线帮助读者建立理解，而不只是收集链接。当前资料快照与本轮重点内容核对日期均为 **2026-10-22**。本项目不声称覆盖全网。
 
-当前目录有 **82 条**：67 篇论文、8 篇技术长文、7 个项目和资源入口。网站包括：
+## V2 的变化
 
-- 实时搜索中文、英文标题、作者、研究主题和关键词
-- 内容类型、主题、核心/前史/相邻方向、阅读等级 S/A/B 筛选
-- 按推荐权重、新旧时间、标题排序
-- 三条递进式阅读路线（快速入门、架构训练、前沿研究）
-- 每篇中文简介、入选理由和边界/阅读提醒
-- 本地收藏、仅看收藏、导出 Markdown 书单、导出完整 JSON
-- 调节循环次数的简单交互式结构示意
-- 深色响应式 UI；手机可浏览
+- 浅色编辑式布局，另可切换深色模式；桌面、平板、手机响应式适配。
+- 独立的发现页、资料库、学习路线、概念与方法、个人书架。
+- 14 条重点阅读导览：阅读问题、先修知识、阅读重点、结论边界、关联阅读和核对来源。
+- 3 条学习路线，共 13 个有序阅读步骤，支持本地已读进度。
+- 按类型、研究主题、关键词、关联方向和导读状态筛选，支持时间与推荐排序。
+- 保留旧版收藏存储键；支持本地书架、Markdown 导出、单篇分享链接和 `/` 搜索快捷键。
 
-## 免费发布到公共互联网
+核对摘要或原文，不等于独立复现实验。其余条目仍保留上一版摘要，详情页会标注本轮尚未逐项复核。原目录的 S/A/B 仅为推荐排序参考，不再显示为论文质量评分。
 
-### GitHub Pages
+## 文件结构
 
-1. 在 GitHub 新建公开仓库，例如 `loop-transformer-atlas`。
-2. 把本目录的站点与文档文件上传到仓库根目录（包括 `index.html`、`catalog.json`、`README.md`、`.nojekyll` 和 `.github/ISSUE_TEMPLATE/`）。
-3. 打开仓库 **Settings → Pages**，在 Build and deployment 中选择 **Deploy from a branch**，分支选 **main**，目录选 **/(root)**，保存。
-4. 部署成功后，Pages 页面会显示网站地址，通常形如 `https://你的用户名.github.io/loop-transformer-atlas/`。
+```text
+index.html                # 线上入口（从模板复制生成）
+site_template.html        # 页面壳；编辑后运行构建脚本
+assets/site.css           # 样式与响应式布局
+assets/site.js            # 原生 JavaScript 交互
+catalog.json              # 原始资源目录
+editorial.json            # 重点导读、来源记录与学习路线
+build_site.py             # 数据校验、生成入口、导出独立 HTML
+tests/test_browser.py     # 可选的离线浏览器交互测试
+bibliography.md           # 初版 Markdown 目录快照
+reading-guide.md          # 初版研究导读
+CONTRIBUTING.md            # 社区投稿规范
+PUBLISH.md                # 发布方法
+```
 
-也可将 `index.html` 直接上传 Netlify / Cloudflare Pages 等静态托管。当前文件里未加入评论系统、访问统计或自动更新服务；如果后续希望社区贡献，可以通过 GitHub Issues/PR 审稿后更新 JSON。
+本站不依赖 npm、前端框架、外部字体或 CDN，不包含追踪脚本。书架与阅读进度仅保存在读者的浏览器。
 
-## 更新论文库
+## 本地运行
 
-条目数据维护在 **`catalog.json`**；页面由 `site_template.html` + `build_site.py` 生成：
+需要 Python 3.10 或更高版本：
+
+```bash
+python build_site.py --check
+python -m http.server 8000
+```
+
+浏览器打开 `http://localhost:8000/`。直接双击源码的 `index.html` 时，浏览器可能阻止读取 JSON；请使用 HTTP 服务或下面的独立版本。
+
+模板更新后运行：
 
 ```bash
 python build_site.py
 ```
 
-这个命令在本目录重新生成 `index.html`。需要修改站点视觉或交互时编辑 `site_template.html`，维护内容时只编辑 `catalog.json`。生成器不需要第三方 Python 包。
+生成一个可直接打开、无需网络的独立 HTML：
 
-### 一条数据的字段
-
-```json
-{
-  "id": "1807.03819",
-  "title": "Universal Transformers",
-  "short": "Universal Transformer",
-  "year": 2018,
-  "month": "2018-07",
-  "kind": "paper",
-  "scope": "core",
-  "tier": "S",
-  "topic": "基础与理论",
-  "author": "Dehghani et al.",
-  "desc": "简短的中文摘要",
-  "why": "为什么值得读",
-  "caveat": "实验局限、范围与阅读提醒",
-  "url": "https://arxiv.org/abs/1807.03819",
-  "arxiv": "1807.03819",
-  "code": "",
-  "project": "",
-  "tags": ["weight-sharing", "adaptive-depth"]
-}
+```bash
+python build_site.py --standalone dist/loop-atlas.html
 ```
 
-`kind` 取 `paper`、`blog` 或 `project`；`scope` 取 `core`（同一前向传播内跨虚拟深度重复共享计算）、`foundation`（历史前身）或 `adjacent`（相关但不完全符合严格定义的方向）。`tier`：`S` = 精读优先，`A` = 延伸阅读，`B` = 补充背景。**评级是本站编辑建议，不是科学上的客观论文质量分数。**
+该文件内嵌目录、导读、样式和脚本；外部论文链接仍需联网。不要把生成的独立文件作为日常编辑源。
 
-## 策展逻辑
+## 维护内容
 
-我们用以下问题判断资源是否值得入选：
+在 `catalog.json` 中维护资源及原始链接，在 `editorial.json` 中维护中文导读与路线，避免把目录硬编码进页面。
 
-1. **不可替代性**：是否开创架构、分析框架，或产生关键的可复现实验？
-2. **对照质量**：是否明确区分参数量、训练 FLOPs、推理 FLOPs、token 预算、吞吐/延迟、KV Cache？
-3. **失败边界**：是否讨论循环深度外推、训练不稳定、状态收敛、任务分布之外的失败模式？
-4. **实用程度**：是否有真实的训练代码、checkpoint、可靠的复现材料？
-5. **解释深度**：技术博客是否有原始实验、推导或深入分析，而非只转述论文摘要？
+新增条目应有唯一 `id`，并正确填写 `kind`（`paper` / `blog` / `project`）与 `scope`（`core` / `foundation` / `adjacent`）。重点导读必须提供 `source`、`checked` 和 `review`，如实说明实际核对范围，不能把“摘要核对”写成“全文精读”或“已复现”。
 
-以下几类比较**不可直接当成同一命题**：
+修改后运行 `python build_site.py --check` 检查重复 ID、失效的内部引用、必要字段和链接格式。这个检查**不联网验证外部链接是否可访问**。旧的 `bibliography.md` 和 `reading-guide.md` 是初版快照，不会由 V2 构建脚本自动更新。
 
-- 相同模型参数数下，循环和普通层堆叠哪个更好？
-- 相同预训练 FLOPs 下，循环和普通层堆叠哪个更好？
-- 相同解码计算量/吞吐约束下哪个更好？
-- 不改变物理层数，只在推理时增加 Loop，何时改进、何时退化？
-- 推理时参数复用能否降低 KV Cache 等内存，是否必须修改缓存策略？
+## 浏览器测试
 
-本站强调 **Looped Transformer ≠ 所有 latent reasoning ≠ diffusion sampling ≠ agent 循环调用**。相邻研究仅用于理解机制、算法联系或实验对照。
+安装可选开发依赖 Playwright 及其 Chromium 浏览器后运行：
 
-## 参考资料与大规模索引
+```bash
+python tests/test_browser.py
+```
 
-检索与交叉检查时重点参考：
+测试使用真实的独立 HTML，但在离线 `about:blank` 环境中模拟本地存储与剪贴板。它覆盖界面与交互，不等于公网部署验收；报告和截图写入 `.qa/`。
 
-- [Looped Language Models: Survey & Meta-analysis（557 篇索引）](https://github.com/ArminAzizi98/looped-lm-survey)
-- [Awesome Loop Models（动态数据库、分类、比较范式）](https://github.com/huskydoge/Awesome-Loop-Models)
-- [Awesome Loop Transformers（双语研究图谱）](https://github.com/Mrkkew/Awesome-Loop-Transformers)
-- [Awesome Loop Transformer（中文深读、译文与幻灯片）](https://github.com/asimfish/awesome_loop_transformer)
-- [Ouro 官方项目页及 follow-ups](https://ouro-llm.github.io/)
-- [IFM 官方 xLLM-Loop 代码](https://github.com/ifm-ai/xllm-loop)
+本轮离线检查覆盖搜索、筛选、导出、收藏恢复、学习进度、模态框、主题，以及 360–1440px 的多种视口。上线后仍建议在实际浏览器确认分享链接、缓存刷新和本地存储行为。
 
-`reading-guide.md` 包括建议精读论文、研究争议以及后续维护方向。`bibliography.md` 是从 JSON 生成的全部资源 Markdown 目录。
+## 发布
 
-## 边界与使用声明
+GitHub Pages 保持 **Deploy from a branch → main → /(root)**。详见 [PUBLISH.md](PUBLISH.md)。
 
-这是一份经过筛选的**研究导读快照，不是全网完备索引**。2026 年新论文更新快，未收录不代表没有研究价值。摘要与推荐理由由编辑撰写，实验结论主要基于原作者公开论文，**不等于本站独立复现与证实**。外链及原论文版权归各自作者/发布方所有。收藏数据保存在浏览器本地存储中；当浏览器不允许本地存储时，收藏仅在当前打开期间有效。本站不向服务器上传任何浏览行为。
-
-## 开放贡献与公开发布
-
-详细部署说明见 [`PUBLISH.md`](PUBLISH.md)；研究内容贡献规范见 [`CONTRIBUTING.md`](CONTRIBUTING.md)。社区可以通过预置 GitHub Issue 表单推荐论文或报告目录错误。
+推荐资料或纠错可以使用仓库的 Issue 表单。所有原论文、博客与项目的版权归原作者；本站仅提供链接和原创导读。未经作者许可，不镜像全文或重新分发权重。

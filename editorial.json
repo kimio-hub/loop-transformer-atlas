@@ -1,0 +1,347 @@
+{
+  "version": 2,
+  "updated": "2026-10-22",
+  "featured": [
+    "1807.03819",
+    "2502.05171",
+    "2510.25741",
+    "2507.10524",
+    "2604.21106",
+    "2610.23036"
+  ],
+  "notes": {
+    "1807.03819": {
+      "heading": "循环的起点：把同一层，再用一次",
+      "question": "反复使用同一组参数，与堆叠更多独立的层，有什么不同？",
+      "takeaway": "Universal Transformer 将注意力和沿深度的循环结合起来，并让不同位置可以在不同计算步停止。这是理解后续 Looped Transformer 的起点。",
+      "prerequisite": "Transformer 的注意力、残差连接；不需要先懂强化学习。",
+      "focus": "先看共享更新规则，再看逐位置停止机制。区分序列位置和循环步数这两个维度。",
+      "boundary": "论文中的表达能力结论有假设条件；算法任务上的泛化结果不能直接推广为现代大模型的全面优势。",
+      "level": "入门",
+      "review": "摘要与元数据",
+      "source": "https://arxiv.org/abs/1807.03819",
+      "related": [
+        "2502.05171",
+        "1603.08983"
+      ],
+      "checked": "2026-10-22"
+    },
+    "2502.05171": {
+      "heading": "Huginn：不增加输出文字，也能增加计算",
+      "question": "模型能否在生成下一个 token 前，先在隐藏状态里多计算几轮？",
+      "takeaway": "Huginn 把模型分成前段、反复调用的中间模块和后段。训练时改变循环深度，测试时再探索额外计算是否带来收益。",
+      "prerequisite": "先读 Universal Transformer；理解自回归生成与 KV cache。",
+      "focus": "对照前段、中间循环、后段的职责，观察训练深度与测试深度的关系，以及不同任务如何响应额外循环。",
+      "boundary": "支持更多循环，不代表任意深度都稳定有效。参数量、展开后的计算量和实际延迟是三个不同指标。",
+      "level": "进阶",
+      "review": "原文 HTML",
+      "source": "https://arxiv.org/abs/2502.05171",
+      "related": [
+        "2510.25741",
+        "2610.06833",
+        "2510.14961"
+      ],
+      "checked": "2026-10-22"
+    },
+    "2510.25741": {
+      "heading": "Ouro：把循环推理放进预训练",
+      "question": "循环带来的是更多知识，还是更好的知识使用能力？",
+      "takeaway": "Ouro 提供预训练的循环语言模型，并研究学习计算深度。作者把知识容量与知识操作能力分开讨论，适合与 Huginn 对照阅读。",
+      "prerequisite": "了解 Huginn 的中间模块循环，以及语言模型预训练。",
+      "focus": "区分整栈循环与中间模块循环；查看知识能力实验的设置，而不只看模型参数和总分。",
+      "boundary": "小参数模型在部分评测中追上大模型，不等于训练成本、推理成本和所有任务都占优。",
+      "level": "进阶",
+      "review": "摘要与元数据",
+      "source": "https://arxiv.org/abs/2510.25741",
+      "related": [
+        "2502.05171",
+        "2610.23036",
+        "2604.21106"
+      ],
+      "checked": "2026-10-22"
+    },
+    "2507.10524": {
+      "heading": "MoR：不是每个 token 都需要想一样久",
+      "question": "能不能把更多循环计算留给更需要的 token？",
+      "takeaway": "Mixture-of-Recursions 把参数共享和逐 token 的动态深度结合起来。轻量路由器分配循环次数，并配合选择性 KV 缓存。",
+      "prerequisite": "循环模型、路由器的基本概念、KV cache。",
+      "focus": "对照路由策略、活跃 token 的注意力计算以及 KV 共享方案；再看吞吐量和质量之间的关系。",
+      "boundary": "动态深度会改变批处理与缓存行为。较少的理论计算不自动等于端到端更低的延迟。",
+      "level": "进阶",
+      "review": "摘要与元数据",
+      "source": "https://arxiv.org/abs/2507.10524",
+      "related": [
+        "1603.08983",
+        "2405.16039",
+        "loop-flops-memory"
+      ],
+      "checked": "2026-10-22"
+    },
+    "2604.21106": {
+      "heading": "循环一次，到底值多少新参数？",
+      "question": "“参数更少”与“训练更划算”，是不是同一回事？",
+      "takeaway": "这篇工作用等展开深度的训练实验，估计重复计算能替代多少独立参数。它为循环模型提供了比单看验证损失更细的比较视角。",
+      "prerequisite": "预训练损失、参数量、训练 FLOPs 和 scaling law。",
+      "focus": "先搞清楚实验固定了什么，再理解循环等价指数。把它与架构消融论文并读，而不是只记住一个数字。",
+      "boundary": "文中指数来自特定架构、数据与计算范围，不是所有循环模型的普适常数；也不能据此直接断言推理任务无收益。",
+      "level": "研究",
+      "review": "摘要与元数据",
+      "source": "https://arxiv.org/abs/2604.21106",
+      "related": [
+        "2610.23036",
+        "loop-flops-memory",
+        "2510.25741"
+      ],
+      "checked": "2026-10-22"
+    },
+    "2610.23036": {
+      "heading": "Done Right I：哪些架构选择真正起作用？",
+      "question": "Huginn 和 Ouro 的差异，究竟来自循环位置、输入注入，还是状态设计？",
+      "takeaway": "作者把几个常被同时改变的设计因素拆开做对照。阅读重点是实验如何隔离变量，而不是简单宣布某一种架构获胜。",
+      "prerequisite": "先对照 Huginn 与 Ouro；了解参数、计算量、训练 token 的控制。",
+      "focus": "沿着消融链看每一步只改了什么，分别观察上下文提取、知识使用、推理以及 MoE 迁移结果。",
+      "boundary": "本轮核对的是作者公开稿；arXiv 链接抓取未成功。公开稿与后续版本可能不同，引用实验前应再次核对版本。",
+      "level": "研究",
+      "review": "作者公开稿",
+      "source": "https://www.alphaxiv.org/abs/2609.towards-looped-models-done-right",
+      "related": [
+        "2502.05171",
+        "2510.25741",
+        "2604.21106",
+        "2610.06833"
+      ],
+      "checked": "2026-10-22"
+    },
+    "2610.06833": {
+      "heading": "Done Right II：接近固定点后，怎样省计算？",
+      "question": "循环状态逐渐稳定，能否改变训练、预填充和解码的做法？",
+      "takeaway": "这篇把固定点附近的状态行为，与截断反传、KV 共享、预填充蒸馏和 RL 更新联系起来，并研究深度先验与输入注入。",
+      "prerequisite": "理解反向传播、KV cache，以及固定点 h = F(h)。",
+      "focus": "把训练、prefill、decode 和 RL 四种成本分别看；关注深度分布如何影响缓存共享。",
+      "boundary": "缓存与速度收益依赖训练方法和具体评测设置，不能当成任意循环模型都能直接获得的免费优化。",
+      "level": "研究",
+      "review": "摘要与元数据",
+      "source": "https://arxiv.org/abs/2610.06833",
+      "related": [
+        "2610.23036",
+        "2502.05171",
+        "loop-flops-memory"
+      ],
+      "checked": "2026-10-22"
+    },
+    "looped-gpt": {
+      "heading": "动手入口：从一个最小循环 GPT 开始",
+      "question": "在已有 Transformer 中，循环应该加在哪里，梯度怎样走？",
+      "takeaway": "作者用反向残差连接讲解循环 GPT，给出前向与反向传播伪代码，以及预训练实验和代码入口。",
+      "prerequisite": "能读 PyTorch 的模型前向过程；理解残差连接和反向传播。",
+      "focus": "先沿伪代码追踪 K 次前向，再画出梯度路径。复现时分别控制训练 token 和训练计算量。",
+      "boundary": "它是一种具体实现，不代表所有循环模型；作者的实验结论应结合数据、基线和预算阅读。",
+      "level": "入门",
+      "review": "博客正文",
+      "source": "https://sanyalsunny111.github.io/posts/2026-01-15-post1-looped-gpt/",
+      "related": [
+        "1807.03819",
+        "loop-flops-memory",
+        "2410.20672"
+      ],
+      "checked": "2026-10-22"
+    },
+    "loop-flops-memory": {
+      "heading": "把账算清楚：参数、激活、FLOPs 与显存",
+      "question": "共享权重之后，为什么显存和计算量仍然可能随循环次数增长？",
+      "takeaway": "这篇沿一条消融链分析共享权重、每步损失、detach、即时更新、截断和 checkpointing 的成本，适合做实验前阅读。",
+      "prerequisite": "反向传播、计算图、激活保存与 gradient checkpointing。",
+      "focus": "把参数内存、优化器状态、激活内存分开记录，并确认每种方案是否改变了学习算法。",
+      "boundary": "文章主要分析成本，不负责判定哪种训练方法的下游效果最好；不能把成本下降直接写成整体能力提升。",
+      "level": "进阶",
+      "review": "博客正文",
+      "source": "https://huskydoge.github.io/husky-blog/posts/recursive_models/loop-cost/",
+      "related": [
+        "looped-gpt",
+        "2604.21106",
+        "2610.06833"
+      ],
+      "checked": "2026-10-22"
+    },
+    "1603.08983": {
+      "heading": "ACT：让网络学习什么时候停",
+      "question": "难题多算几步、简单题少算几步，怎样成为可训练的机制？",
+      "takeaway": "ACT 为循环网络引入自适应计算步数。它帮助读者理解后续逐位置或逐 token 停止机制的来源。",
+      "prerequisite": "RNN 的状态更新与梯度训练。",
+      "focus": "关注停止机制和计算代价的约束，而不是把“停止”理解为输出 EOS token。",
+      "boundary": "原文研究 RNN，并不是 Transformer。其合成任务收益也不能直接外推到语言模型的所有场景。",
+      "level": "入门",
+      "review": "摘要与元数据",
+      "source": "https://arxiv.org/abs/1603.08983",
+      "related": [
+        "1807.03819",
+        "2507.10524"
+      ],
+      "checked": "2026-10-22"
+    },
+    "programmable-looped-transformers": {
+      "heading": "理论视角：共享计算能否执行算法？",
+      "question": "循环为什么可能比固定深度更适合某些算法结构？",
+      "takeaway": "这篇研究将循环 Transformer 构造为可编程计算系统的能力。它提供的是表达能力视角，而不是大规模预训练配方。",
+      "prerequisite": "基础线性代数、Transformer；愿意阅读构造性证明。",
+      "focus": "把“存在一组参数能够实现”与“梯度下降能够学到”严格分开。",
+      "boundary": "表达能力或可编程性证明，不等于训练容易，也不保证语言任务上的效率优势。",
+      "level": "研究",
+      "review": "会议原始页面",
+      "source": "https://proceedings.mlr.press/v202/giannou23a.html",
+      "related": [
+        "1807.03819",
+        "2604.21106"
+      ],
+      "checked": "2026-10-22"
+    },
+    "2410.20672": {
+      "heading": "放松共享：用 LoRA 保留各层差异",
+      "question": "完全共享太受限时，可以只给各层留下一点独有参数吗？",
+      "takeaway": "Relaxed Recursive Transformers 研究参数共享与逐层 LoRA 的结合，适合作为严格权重绑定之外的对照路线。",
+      "prerequisite": "LoRA 的低秩更新与跨层参数共享。",
+      "focus": "区分共享主权重和逐层增量；比较时同时计算共享参数与独有参数。",
+      "boundary": "加入层特定参数后，不再是完全相同的更新规则。它与严格循环模型的成本和归纳偏置不同。",
+      "level": "进阶",
+      "review": "摘要与元数据",
+      "source": "https://arxiv.org/abs/2410.20672",
+      "related": [
+        "looped-gpt",
+        "2507.10524"
+      ],
+      "checked": "2026-10-22"
+    },
+    "2412.06769": {
+      "heading": "Coconut：隐藏空间推理，不一定是深度循环",
+      "question": "把连续隐藏状态继续喂给模型，与反复调用同一个深度模块，有什么区别？",
+      "takeaway": "Coconut 是连续潜在推理的重要关联路线。把它放在旁边对照，有助于避免把所有 latent reasoning 都叫作 Loop Transformer。",
+      "prerequisite": "自回归生成、隐藏状态和 chain-of-thought。",
+      "focus": "分别追踪隐藏状态在哪里传递、计算图沿哪个维度延伸，以及监督信号来自哪里。",
+      "boundary": "本站将它标为关联方向，而非与 Huginn、Ouro 相同的架构。",
+      "level": "进阶",
+      "review": "摘要与元数据",
+      "source": "https://arxiv.org/abs/2412.06769",
+      "related": [
+        "2502.05171",
+        "2510.14961"
+      ],
+      "checked": "2026-10-22"
+    },
+    "2510.14961": {
+      "heading": "连接扩散：从循环状态到并行采样",
+      "question": "循环深度与 diffusion 的联系，能否变成实际的生成加速？",
+      "takeaway": "作者研究 recurrent-depth 模型与 diffusion language model 的关系，并提出让 token 生成与隐藏状态细化并行推进的采样方法。",
+      "prerequisite": "Huginn、自回归解码，以及扩散模型的迭代细化概念。",
+      "focus": "看清训练模型与推理采样器的区别，再观察哪些状态更新可以并行。",
+      "boundary": "这篇建立特定模型与采样方式的联系，不意味着所有循环模型和所有 dLLM 都等价；加速也依赖硬件与设置。",
+      "level": "研究",
+      "review": "摘要与元数据",
+      "source": "https://arxiv.org/abs/2510.14961",
+      "related": [
+        "2502.05171",
+        "2412.06769"
+      ],
+      "checked": "2026-10-22"
+    }
+  },
+  "routes": [
+    {
+      "id": "start",
+      "number": "01",
+      "title": "先建立完整图景",
+      "subtitle": "从共享权重，到循环语言模型",
+      "audience": "第一次系统了解这个方向",
+      "prerequisite": "知道 Transformer 与自回归语言模型是什么。",
+      "outcome": "能区分循环位置、训练深度与测试深度，并解释为什么参数效率不等于计算效率。",
+      "steps": [
+        {
+          "id": "1807.03819",
+          "goal": "认识共享更新与动态停止",
+          "question": "循环的是序列位置，还是同一份表示的计算深度？"
+        },
+        {
+          "id": "2502.05171",
+          "goal": "理解现代 recurrent-depth 模型",
+          "question": "前段、中间循环和后段各自做什么？"
+        },
+        {
+          "id": "2510.25741",
+          "goal": "比较另一条预训练路线",
+          "question": "整栈循环与 Huginn 的中间模块循环有何不同？"
+        },
+        {
+          "id": "2604.21106",
+          "goal": "学会审视效率结论",
+          "question": "同参数、同 token、同 FLOPs，是同一种比较吗？"
+        }
+      ]
+    },
+    {
+      "id": "build",
+      "number": "02",
+      "title": "从阅读走到实验",
+      "subtitle": "先做最小实现，再考虑优化",
+      "audience": "准备写代码、训练或改造模型",
+      "prerequisite": "能读 PyTorch 前向代码，了解反向传播和 KV cache。",
+      "outcome": "能画出循环计算图、列出内存开销，并设计至少一组公平的非循环基线。",
+      "steps": [
+        {
+          "id": "looped-gpt",
+          "goal": "跟着伪代码理解最小模型",
+          "question": "K 次前向之后，梯度会流过哪些重复调用？"
+        },
+        {
+          "id": "loop-flops-memory",
+          "goal": "给计算和显存分别记账",
+          "question": "共享权重后，哪些内存项仍随循环次数增加？"
+        },
+        {
+          "id": "2410.20672",
+          "goal": "认识部分共享的折中方案",
+          "question": "加入层特定 LoRA 后，比较参数量时需要额外计入什么？"
+        },
+        {
+          "id": "2507.10524",
+          "goal": "再进入动态计算与缓存",
+          "question": "逐 token 深度对路由、批处理和缓存提出了什么要求？"
+        }
+      ]
+    },
+    {
+      "id": "research",
+      "number": "03",
+      "title": "带着问题做研究",
+      "subtitle": "把理论、反例和系统证据放在一起",
+      "audience": "准备选题、设计消融或写研究综述",
+      "prerequisite": "读过 Huginn、Ouro，理解预训练预算和实验对照。",
+      "outcome": "能区分表达能力、可学习性与真实加速，并提出一个可验证而非只追热点的问题。",
+      "steps": [
+        {
+          "id": "programmable-looped-transformers",
+          "goal": "厘清理论能说明什么",
+          "question": "证明能表达一种算法，为什么不等于实际训练能学到？"
+        },
+        {
+          "id": "2604.21106",
+          "goal": "建立效率比较的标尺",
+          "question": "循环收益来自额外容量、更多计算，还是训练策略？"
+        },
+        {
+          "id": "2610.23036",
+          "goal": "学习拆开架构混杂因素",
+          "question": "循环位置、输入注入和状态初始化能否分别控制？"
+        },
+        {
+          "id": "2610.06833",
+          "goal": "把状态行为与系统成本联系起来",
+          "question": "接近固定点时，哪些训练或推理开销可能被省掉？"
+        },
+        {
+          "id": "2510.14961",
+          "goal": "探索与并行采样的联系",
+          "question": "这是模型本身改变了，还是采样过程改变了？"
+        }
+      ]
+    }
+  ]
+}

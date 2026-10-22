@@ -1,0 +1,4 @@
+.qa/
+dist/
+__pycache__/
+*.pyc

@@ -1,38 +1,46 @@
-# Publish LOOP / ATLAS with GitHub Pages
+# GitHub Pages 发布与维护
 
-The website is already built. No local compilation or external dependencies are required for a reader to view it.
+本仓库的页面入口为根目录的 `index.html`。
 
-## 1. Create a new empty repository
+## 现有网站更新
 
-While signed into GitHub, go to https://github.com/new and create a **public** repository named `loop-transformer-atlas` (or a name you prefer). Avoid selecting an initial README, `.gitignore` or license when making the empty repository, since the prepared package already contains the necessary files.
+保持仓库 **Settings → Pages → Build and deployment** 为：
 
-Do **not** mix this site into unrelated private research repositories.
+- Source：`Deploy from a branch`
+- Branch：`main`
+- Folder：`/(root)`
 
-## 2. Upload the site
+将更新提交到 `main` 后，GitHub Pages 会按仓库设置进行部署。请在 **Actions** 中确认 Pages 工作流完成后，再打开网站核对实际内容：
 
-Upload the contents of the `loop-transformer-atlas` folder directly to your repository's root. Ensure these paths are present:
+https://kimio-hub.github.io/loop-transformer-atlas/
 
-- `index.html` — the entire website
-- `catalog.json` — the editable catalog
-- `site_template.html` and `build_site.py` — source template and generator
-- `README.md` and `reading-guide.md` — documentation
-- `bibliography.md` — all resource links in Markdown
-- `CONTRIBUTING.md` — contribution guidelines
-- `.github/ISSUE_TEMPLATE/` — community submission and correction forms
-- `.nojekyll` — disables unnecessary Jekyll processing
+“已提交代码”“Pages 构建成功”和“已验证公网页面”是三个不同状态，发布记录应如实区分。
 
-## 3. Turn on GitHub Pages
+## 必须一起发布的文件
 
-In the repository go to **Settings → Pages → Build and deployment**. Choose **Deploy from a branch**, branch **main**, folder **/(root)**, and click **Save**. GitHub will show the Pages address after the first deployment completes. It will normally look like:
+`index.html`、`assets/site.css`、`assets/site.js`、`catalog.json`、`editorial.json` 和 `.nojekyll`。
 
-`https://YOUR_USERNAME.github.io/loop-transformer-atlas/`
+只上传 `index.html` 会丢失样式、交互或数据。`site_template.html` 是入口源文件，`build_site.py` 是本地构建和校验工具；GitHub Pages 不需要运行 Python。
 
-This is an illustrative pattern, not a verified website address.
+## 编辑与自检
 
-## 4. Maintain the catalog
+```bash
+python build_site.py --check
+python -m http.server 8000
+```
 
-Edit `catalog.json`, run `python build_site.py`, then commit both the JSON and newly generated `index.html`. Changes to `main` are published by Pages. For new contributors, use the provided GitHub Issue templates and review additions before editing the catalog.
+修改 `site_template.html` 后，先运行 `python build_site.py` 重新生成入口。修改目录或导读 JSON 后，网页会在下次加载时读取新数据。
 
-## 5. Future improvements
+样式或交互有更新时，可以同时更新模板里的静态资源版本查询参数，并重新构建。浏览器仍显示旧版时可强制刷新；不要为了刷新页面清除网站存储，否则读者会丢失本地书架。
 
-Add a separate `notes/` directory with original Chinese deep-reading essays, research graphs and experiment comparisons. Over time, these original interpretations should become the site's main asset; maintaining the raw paper list alone is not the goal.
+## 回退
+
+保留 Git 历史。出现问题时，可以通过正常的 revert 提交回退对应更新；不要强制覆盖分支历史，也不要删除整个仓库。涉及多人同时修改时，先核对分支最新提交。
+
+## 可离线打开的版本
+
+```bash
+python build_site.py --standalone dist/loop-atlas.html
+```
+
+该文件用于分享或离线阅读；日常维护仍应修改源文件，而不是编辑导出的单文件。
