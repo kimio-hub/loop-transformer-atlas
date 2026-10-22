@@ -1,0 +1,31 @@
+name: Report an incorrect or outdated entry
+description: Flag a broken link, misleading paper summary, mismatched arXiv ID or new version
+labels: ["catalog-quality"]
+body:
+  - type: input
+    id: resource
+    attributes:
+      label: Resource URL or title
+    validations:
+      required: true
+  - type: dropdown
+    id: issue
+    attributes:
+      label: Problem type
+      options:
+        - Broken or incorrect link
+        - Title or author metadata is wrong
+        - Summary is inaccurate
+        - Comparison/evidence is misleading
+        - Category or level needs revision
+        - Duplicated resource
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: What should be corrected?
+      description: Please include the relevant original source for an evidence-based correction.
+    validations:
+      required: true

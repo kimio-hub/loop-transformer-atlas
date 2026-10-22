@@ -1,0 +1,67 @@
+name: Suggest a research resource
+description: Propose a Loop Transformer paper, technical blog, project or implementation
+labels: ["resource-submission"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for improving LOOP / ATLAS. We prioritize original contributions, careful baselines, and clear learning value over collection size.
+  - type: input
+    id: title
+    attributes:
+      label: Title of the resource
+      placeholder: Towards Looped Models Done Right...
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: Direct primary-source URL
+      description: Prefer arXiv, an official proceedings site, the author's technical blog or the official code repository.
+      placeholder: https://arxiv.org/abs/...
+    validations:
+      required: true
+  - type: dropdown
+    id: type
+    attributes:
+      label: Resource type
+      options:
+        - Paper
+        - Technical blog
+        - Research project / code
+    validations:
+      required: true
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Research scope
+      options:
+        - Core looped / recurrent-depth Transformer
+        - Historical / theoretical foundation
+        - Related but not strictly looped model
+        - Unsure
+    validations:
+      required: true
+  - type: textarea
+    id: contribution
+    attributes:
+      label: Why should readers care?
+      description: Explain the contribution in 2–5 sentences; not only an abstract copy-paste.
+      placeholder: What new capability, design, analysis or negative result does this work introduce?
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence and comparison conditions
+      description: State baselines and, where applicable, whether parameters, training FLOPs, inference FLOPs, tokens and KV cache were matched.
+      placeholder: Controlled comparisons / constraints / empirical limitations
+    validations:
+      required: false
+  - type: textarea
+    id: code
+    attributes:
+      label: Code or project URL (optional)
+      placeholder: https://github.com/...
+    validations:
+      required: false
